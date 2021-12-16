@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/Lunala_logo.jpg" style="width:300px; height:300px;">
-    <Main msg="Welcome to Your Vue.js App"/>
+    <Main/>
   </div>
 </template>
 

@@ -23,6 +23,7 @@
       ></b-form-checkbox-group>
     </b-form-group>
     <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="generateCards()">Generate Cards</b-button>
+    <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="generateCards()">Update Difficulties</b-button>
     <div v-if="dataLoaded" class="card_div">
       <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
         <b-card v-for="item in row" :key="item" class="card" text-variant="white" :header='getDifficulty(vocab_file["Difficulty"][item])'>
@@ -30,6 +31,7 @@
           <button class="stretched-link" style="height:0px; background-color:rgb(46, 24, 145); border-style:none" @click="cycleCard(item)"></button>
         </b-card>
       </b-card-group>
+      <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="getCards()">Next Cards</b-button>
     </div>
 
     <b-form-file
@@ -56,14 +58,13 @@ const CARDS_PER_ROW = 6;
 
 export default {
   name: 'Main',
-  props: {
-    msg: String
-  },
   data() {
     return {
       vocab_file: [],
       file_input: [],
       cards: [],
+      offset: 0,
+      numSet: [],
       cardGrid: [],
       cardStates: {},
       dataLoaded: false,
@@ -114,12 +115,13 @@ export default {
           console.log('File failed to send')
         });
         await this.getVocab();
-        this.selected_diff = ["New", "Easy", "Medium", "Hard"]
-        this.selected_cards = [36]
-        this.generateCards();
+        this.selected_diff = ["New", "Easy", "Medium", "Hard"];
+        this.selected_cards = [36];
+        this.shuffleCards();
+        this.generateCards(0);
       }
     },
-    generateCards() {
+    shuffleCards() {
       let shuffle = function(arr) {
         let currIndex = arr.length, randomIndex;
         while (currIndex !== 0) {
@@ -130,32 +132,45 @@ export default {
         return arr;
       }
       let numCards = Object.keys(this.vocab_file['Kanji']).length;
-      let numSet = [];
+      this.numSet = [];
       for (let i = 0; i < numCards; i++) {
         if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
-          numSet.push(i);
+          this.numSet.push(i);
         }
       }
-      numSet = shuffle(numSet);
-      // console.log(numSet);
-      this.cardGrid = [];
-      let numRows = this.selected_cards[0]/6;
-      for (let i = 0; i < numRows; i++) {
-        let currRow = [];
-        for (let j = 0; j < CARDS_PER_ROW; j++) {
-          try {
-            currRow.push(numSet[CARDS_PER_ROW*i+j]);
-            this.cardStates[numSet[CARDS_PER_ROW*i+j].toString()] = 0;
+      this.numSet = shuffle(this.numSet);
+      console.log(this.numSet.length, this.numSet)
+    },
+    generateCards() {
+      this.offset = 0;
+      this.shuffleCards();
+      this.getCards(this.offset);
+      this.offset += this.selected_cards[0];
+    },
+    getCards() {
+      console.log(this.offset)
+      if (this.offset <= Object.keys(this.vocab_file['Kanji']).length) {
+        // console.log(numSet);
+        this.cardGrid = [];
+        let numRows = this.selected_cards[0]/6;
+        for (let i = 0; i < numRows; i++) {
+          let currRow = [];
+          for (let j = 0; j < CARDS_PER_ROW; j++) {
+            try {
+              currRow.push(this.numSet[CARDS_PER_ROW*i+j+this.offset]);
+              this.cardStates[this.numSet[CARDS_PER_ROW*i+j+this.offset].toString()] = 0;
+            }
+            catch (error) {
+              console.log("Not enough cards in the deck");
+              break;
+            }
           }
-          catch (error) {
-            console.log("Not enough cards in the deck");
-            break;
-          }
+          this.cardGrid.push(currRow);
         }
-        this.cardGrid.push(currRow);
+        this.offset += this.selected_cards[0];
+        // console.log(this.cardGrid);
+        // console.log(this.cardStates);
       }
-      console.log(this.cardGrid);
-      console.log(this.cardStates);
     },
     getDifficulty(num) {
       if (num === 0) {
@@ -197,20 +212,21 @@ export default {
       if (this.cardStates[item] > 2) {
         this.cardStates[item] = 0;
       }
-      console.log(this.cardStates[item]);
+      // console.log(this.cardStates[item]);
       this.$forceUpdate();
     },
     updateChecklist() {
       let currCard = this.selected_cards[this.selected_cards.length-1];
       this.selected_cards = [];
       this.selected_cards.push(currCard);
-      console.log(this.selected_diff)
-      console.log(this.selected_cards)
+      // console.log(this.selected_diff)
+      // console.log(this.selected_cards)
     }
   }, 
   async beforeMount() {
     await this.getVocab();
-    this.generateCards();
+    this.shuffleCards();
+    this.generateCards(0);
     this.dataLoaded = true; 
   }
 }
