@@ -54,7 +54,7 @@
 import axios from 'axios'
 
 const NUM_HEADERS = 5;
-const CARDS_PER_ROW = 6;
+const CARDS_PER_ROW = 7;
 
 export default {
   name: 'Main',
@@ -69,7 +69,7 @@ export default {
       cardStates: {},
       dataLoaded: false,
       difficulties: ["New", "Easy", "Medium", "Hard"],
-      numCards: [18, 36, 60, 120, 240, 480],
+      numCards: [14, 35, 70, 140, 280, 469],
       selected_diff: ["New", "Easy", "Medium", "Hard"],
       selected_cards: [36]
     }
@@ -148,12 +148,15 @@ export default {
       this.offset += this.selected_cards[0];
     },
     getCards() {
-      console.log(this.offset)
       if (this.offset <= Object.keys(this.vocab_file['Kanji']).length) {
+        let breakEarly = false;
         // console.log(numSet);
         this.cardGrid = [];
-        let numRows = this.selected_cards[0]/6;
+        let numRows = this.selected_cards[0]/CARDS_PER_ROW;
         for (let i = 0; i < numRows; i++) {
+          if (breakEarly) {
+            break;
+          }
           let currRow = [];
           for (let j = 0; j < CARDS_PER_ROW; j++) {
             try {
@@ -162,10 +165,12 @@ export default {
             }
             catch (error) {
               console.log("Not enough cards in the deck");
+              breakEarly = true;
               break;
             }
           }
           this.cardGrid.push(currRow);
+          console.log(this.cardGrid)
         }
         this.offset += this.selected_cards[0];
         // console.log(this.cardGrid);
