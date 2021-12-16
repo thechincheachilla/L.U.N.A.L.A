@@ -14,13 +14,17 @@
       drop-placeholder="Drop file here..."
       @change="loadCSV"
     ></b-form-file>
-    <div class="mt-3">Selected file: {{ file_input ? file_input.name : '' }}</div>
-    <b-button class="button" @click="replaceCSV">Submit</b-button> 
+    <div>
+      <b-button class="button" @click="replaceCSV">Submit</b-button> 
+      <b-button class="button" @click="getVocab">Test</b-button> 
+    </div>
     
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 const NUM_HEADERS = 6;
 
 export default {
@@ -30,10 +34,18 @@ export default {
   },
   data() {
     return {
-      file_input: []
+      vocab_file: [],
+      file_input: [],
     }
   },
   methods: {
+    getVocab() {
+      let path = 'http://localHost:5000/getVocab'
+      axios.get(path)
+        .then((res) => {
+          console.log(res.data)
+        })
+    },
     loadCSV(ev) {
       const newFile = ev.target.files[0]
       const reader = new FileReader();
@@ -51,12 +63,26 @@ export default {
         this.file_input = [];
       }
     },
-    replaceCSV() {
-      const reader = new FileReader();
-      reader.readAsText(newFile);
-      console.log("../assets/Vocabulary.csv");
-      
+    async replaceCSV() {
+      if (this.file_input != []) {
+        let formData = new FormData();
+        formData.append('file', this.file_input);
+        let path = 'http://localHost:5000/replace'
+        await axios.post(path, formData, { 
+          headers: {
+            'Content-Type': 'multipart/form-data' 
+          }
+        }).then(function() {
+          console.log('File successfully sent');
+        }).catch(function() {
+          console.log('File failed to send')
+        });
+        this.getVocab();
+      }
     }
+  }, 
+  beforeMount() {
+    this.getVocab();
   }
 }
 </script>

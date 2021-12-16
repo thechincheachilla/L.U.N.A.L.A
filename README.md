@@ -23,6 +23,9 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
+### Required imports
+Pandas: pip install pandas
+Axios: npm install axios 
 
 ### Running the server
 Navigate to the server directory
