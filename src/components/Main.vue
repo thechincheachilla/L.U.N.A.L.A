@@ -1,9 +1,31 @@
 <template>
   <div class="hello">
-    <h1>L.U.N.A.L.A</h1>
+    <h1 style="font-weight:bold; color:rgb(46, 24, 145);">L.U.N.A.L.A</h1>
     <p style="margin-bottom:40px">
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
+    <!-- <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">All</b-button> 
+    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">New</b-button> 
+    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">Easy</b-button> 
+    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">Medium</b-button> 
+    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">Hard</b-button>  -->
+    <b-form-group v-slot="{ ariaDescribedby }">
+      <b-form-checkbox-group
+        v-model="selected_diff"
+        :options="difficulties"
+        :aria-describedby="ariaDescribedby"
+        name="flavour-1a"
+      ></b-form-checkbox-group>
+    </b-form-group>
+    <b-form-group v-slot="{ ariaDescribedby }">
+      <b-form-checkbox-group
+        v-model="selected_cards"
+        :options="numCards"
+        :aria-describedby="ariaDescribedby"
+        name="flavour-1a"
+      ></b-form-checkbox-group>
+    </b-form-group>
+    <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="replaceCSV">Generate Cards</b-button>
     <div v-if="dataLoaded" class="card_div">
       <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
         <b-card v-for="item in row" :key="item" class="card" text-variant="white" :header='getDifficulty(vocab_file["Difficulty"][item])'>
@@ -23,7 +45,7 @@
       @change="loadCSV"
     ></b-form-file>
     <div>
-      <b-button class="button" @click="replaceCSV">Submit</b-button> 
+      <b-button class="button" style="margin-bottom:40px" @click="replaceCSV">Submit</b-button> 
     </div>
     
   </div>
@@ -49,6 +71,10 @@ export default {
       cardGrid: [],
       cardStates: {},
       dataLoaded: false,
+      difficulties: ["New", "Easy", "Medium", "Hard"],
+      numCards: [18, 36, 60, 120, 240, 480],
+      selected_diff: [],
+      selected_cards: []
     }
   },
   methods: {
@@ -172,9 +198,13 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .button {
+  margin-left: 10px;
+  margin-right: 10px;
   margin-top: 20px;
-  background-color:rgb(46, 24, 145)
-}
+  margin-bottom: 40px;
+  background-color:rgb(46, 24, 145);
+  border:none;
+} 
 .file_in {
   width: 20%;
   text-align: left;

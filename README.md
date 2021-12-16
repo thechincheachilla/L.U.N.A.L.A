@@ -25,11 +25,11 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Required imports
 Pandas: ```pip install pandas```\
-Axios: ```npm install axios ```\
+Axios: ```npm install axios ```
 
 ### Running the server
 Navigate to the server directory\
 Activate: ```source env/Scripts/activate```\
 Navigate to the env directory\
-Run: ```python app.py```\
+Run: ```python app.py```
     
