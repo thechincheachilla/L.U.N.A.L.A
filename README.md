@@ -1,4 +1,6 @@
-# lunala
+# L.U.N.A.L.A
+
+Hosted on https://thechincheachilla.github.io/Lunala/
 
 ## Project setup
 ```
@@ -38,4 +40,9 @@ Navigate to the server directory\
 Activate: ```source env/Scripts/activate```\
 Navigate to the env directory\
 Run: ```python app.py```
+
+### Deployment on GH-Pages
+Run: ```npm run-scripts deploy```\
+Navigate to GH-Pages, ensure correct branch is selected\
+Hosted on https://thechincheachilla.github.io/Lunala/
     
