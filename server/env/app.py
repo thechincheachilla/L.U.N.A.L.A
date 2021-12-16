@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+import pandas as pd
 
 
 # configuration
@@ -16,7 +17,7 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 # sanity check route
 @app.route('/ping', methods=['GET'])
 def ping_pong():
-    return jsonify('Vocabulary.csv')
+    return pd.read_csv('Vocabulary.csv').to_json()
 
 
 if __name__ == '__main__':

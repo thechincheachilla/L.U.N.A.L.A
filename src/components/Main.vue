@@ -53,7 +53,7 @@ export default {
     },
     replaceCSV() {
       const reader = new FileReader();
-      reader.readAsText("../assets/Vocabulary.csv");
+      reader.readAsText(newFile);
       console.log("../assets/Vocabulary.csv");
       
     }
