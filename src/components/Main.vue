@@ -1,13 +1,14 @@
 <template>
   <div class="hello">
     <h1>L.U.N.A.L.A</h1>
-    <p>
+    <p style="margin-bottom:40px">
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
-    <div v-if="dataLoaded">
+    <div v-if="dataLoaded" class="card_div">
       <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
         <b-card v-for="item in row" :key="item" class="card" text-variant="white" :header='getDifficulty(vocab_file["Difficulty"][item])'>
-          <b-card-text class="card_text">{{vocab_file["Kanji"][item]}}</b-card-text>
+          <b-card-text class="card_text">{{getText(item)}}</b-card-text>
+          <button class="stretched-link" style="height:0px; background-color:rgb(46, 24, 145); border-style:none" @click="cycleCard(item)"></button>
         </b-card>
       </b-card-group>
     </div>
@@ -46,6 +47,7 @@ export default {
       file_input: [],
       cards: [],
       cardGrid: [],
+      cardStates: {},
       dataLoaded: false,
     }
   },
@@ -109,13 +111,14 @@ export default {
         numSet.push(i);
       }
       numSet = shuffle(numSet);
-      console.log(numSet);
+      // console.log(numSet);
       this.cardGrid = [];
       for (let i = 0; i < INIT_ROWS; i++) {
         let currRow = [];
         for (let j = 0; j < CARDS_PER_ROW; j++) {
           try {
             currRow.push(numSet[CARDS_PER_ROW*i+j]);
+            this.cardStates[numSet[CARDS_PER_ROW*i+j].toString()] = 0;
           }
           catch (error) {
             alert("Not enough cards in the deck");
@@ -124,6 +127,7 @@ export default {
         this.cardGrid.push(currRow);
       }
       console.log(this.cardGrid);
+      console.log(this.cardStates);
     },
     getDifficulty(num) {
       if (num === 0) {
@@ -138,6 +142,23 @@ export default {
       if (num === 3) {
         return "Hard"
       }
+    },
+    getText(item) {
+      if (this.cardStates[item] === 0) {
+        return this.vocab_file["Kanji"][item];
+      }
+      if (this.cardStates[item] === 1) {
+        return this.vocab_file["Hiragana"][item];
+      }
+      return this.vocab_file["English"][item];
+    },
+    cycleCard(item) {
+      this.cardStates[item] = this.cardStates[item] + 1; 
+      if (this.cardStates[item] > 2) {
+        this.cardStates[item] = 0;
+      }
+      console.log(this.cardStates[item]);
+      this.$forceUpdate();
     }
   }, 
   async beforeMount() {
@@ -157,6 +178,11 @@ export default {
 .file_in {
   width: 20%;
   text-align: left;
+  margin-top: 30px;
+}
+.card_div {
+  overflow-y: auto; 
+  height: 1000px;
 }
 .cards {
   margin: auto;
