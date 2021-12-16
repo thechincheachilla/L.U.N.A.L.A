@@ -4,17 +4,13 @@
     <p style="margin-bottom:40px">
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
-    <!-- <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">All</b-button> 
-    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">New</b-button> 
-    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">Easy</b-button> 
-    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">Medium</b-button> 
-    <b-button data-toggle="button" class="button" style="background-color:rgb(209, 211, 1); color:rgb(46, 24, 145)" @click="replaceCSV">Hard</b-button>  -->
     <b-form-group v-slot="{ ariaDescribedby }">
       <b-form-checkbox-group
         v-model="selected_diff"
         :options="difficulties"
         :aria-describedby="ariaDescribedby"
         name="flavour-1a"
+        @change="updateChecklist()"
       ></b-form-checkbox-group>
     </b-form-group>
     <b-form-group v-slot="{ ariaDescribedby }">
@@ -23,9 +19,10 @@
         :options="numCards"
         :aria-describedby="ariaDescribedby"
         name="flavour-1a"
+        @change="updateChecklist()"
       ></b-form-checkbox-group>
     </b-form-group>
-    <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="replaceCSV">Generate Cards</b-button>
+    <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="generateCards()">Generate Cards</b-button>
     <div v-if="dataLoaded" class="card_div">
       <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
         <b-card v-for="item in row" :key="item" class="card" text-variant="white" :header='getDifficulty(vocab_file["Difficulty"][item])'>
@@ -55,7 +52,6 @@
 import axios from 'axios'
 
 const NUM_HEADERS = 5;
-const INIT_ROWS = 6;
 const CARDS_PER_ROW = 6;
 
 export default {
@@ -73,8 +69,8 @@ export default {
       dataLoaded: false,
       difficulties: ["New", "Easy", "Medium", "Hard"],
       numCards: [18, 36, 60, 120, 240, 480],
-      selected_diff: [],
-      selected_cards: []
+      selected_diff: ["New", "Easy", "Medium", "Hard"],
+      selected_cards: [36]
     }
   },
   methods: {
@@ -118,10 +114,12 @@ export default {
           console.log('File failed to send')
         });
         await this.getVocab();
-        this.initCards();
+        this.selected_diff = ["New", "Easy", "Medium", "Hard"]
+        this.selected_cards = [36]
+        this.generateCards();
       }
     },
-    initCards() {
+    generateCards() {
       let shuffle = function(arr) {
         let currIndex = arr.length, randomIndex;
         while (currIndex !== 0) {
@@ -134,12 +132,15 @@ export default {
       let numCards = Object.keys(this.vocab_file['Kanji']).length;
       let numSet = [];
       for (let i = 0; i < numCards; i++) {
-        numSet.push(i);
+        if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
+          numSet.push(i);
+        }
       }
       numSet = shuffle(numSet);
       // console.log(numSet);
       this.cardGrid = [];
-      for (let i = 0; i < INIT_ROWS; i++) {
+      let numRows = this.selected_cards[0]/6;
+      for (let i = 0; i < numRows; i++) {
         let currRow = [];
         for (let j = 0; j < CARDS_PER_ROW; j++) {
           try {
@@ -147,7 +148,8 @@ export default {
             this.cardStates[numSet[CARDS_PER_ROW*i+j].toString()] = 0;
           }
           catch (error) {
-            alert("Not enough cards in the deck");
+            console.log("Not enough cards in the deck");
+            break;
           }
         }
         this.cardGrid.push(currRow);
@@ -168,6 +170,18 @@ export default {
       if (num === 3) {
         return "Hard"
       }
+      if (num === "New") {
+        return 1
+      }
+      if (num === "Easy") {
+        return 1
+      }
+      if (num === "Easy") {
+        return 2
+      }
+      if (num === "Easy") {
+        return 3
+      }
     },
     getText(item) {
       if (this.cardStates[item] === 0) {
@@ -185,11 +199,18 @@ export default {
       }
       console.log(this.cardStates[item]);
       this.$forceUpdate();
+    },
+    updateChecklist() {
+      let currCard = this.selected_cards[this.selected_cards.length-1];
+      this.selected_cards = [];
+      this.selected_cards.push(currCard);
+      console.log(this.selected_diff)
+      console.log(this.selected_cards)
     }
   }, 
   async beforeMount() {
     await this.getVocab();
-    this.initCards();
+    this.generateCards();
     this.dataLoaded = true; 
   }
 }

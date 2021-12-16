@@ -1,44 +1,44 @@
 ﻿Kanji,Hiragana,English,Origin,Difficulty
-誰,だれ,Who,Genki 1.2,0
-魚,さかな,Fish,Genki 1.2,0
-肉,にく,Meat,Genki 1.2,0
-野菜,やさい,Vegetable,Genki 1.2,0
-本,ほん,"Book, counter for long objects",Genki 1.2,0
-お願い,おねがい,Please ,Genki 1.3,0
-映画,えいが,Movie,Genki 1.3,0
-音楽,おんがく,Music,Genki 1.3,0
-雑誌,ざっし,Magazine,Genki 1.3,0
-酒,さけ,Alcohol,Genki 1.3,0
-茶,ちゃ,Tea,Genki 1.3,0
-水,みず,Water,Genki 1.3,0
-朝ご飯,あさごはん,Breakfast,Genki 1.3,0
-昼ご飯,ひるごはん,Lunch,Genki 1.3,0
-晩ご飯,ばんごはん,Dinner,Genki 1.3,0
-家,いえ,House,Genki 1.3,0
-今日,きょう,Today,Genki 1.3,0
-朝,あさ,Morning,Genki 1.3,0
-今晩,こんばん,Tonight,Genki 1.3,0
-毎日,まいにち,Everyday,Genki 1.3,0
-毎朝,まいあさ,Every morning,Genki 1.3,0
-毎晩,まいばん,Every night,Genki 1.3,0
-週末,しゅうまつ,Weekend,Genki 1.3,0
-土曜日,どようび,Saturday,Genki 1.3,0
-日曜日,にちようび,Sunday,Genki 1.3,0
-行く,いく,To go,Genki 1.3,0
-帰る,かえる,To return home,Genki 1.3,0
-聞く,きく,"To listen, to ask",Genki 1.3,0
-読む,よむ,To read,Genki 1.3,0
-飲む,のむ,To drink,Genki 1.3,0
-話す,はなす,To speak,Genki 1.3,0
-勉強する,べんきょうする,To study,Genki 1.3,0
-起きる,おきる,To get up,Genki 1.3,0
-食べる,たべる,To eat,Genki 1.3,0
-寝る,ねる,To go to bed,Genki 1.3,0
-見る,みる,To see,Genki 1.3,0
-来る,くる,To come,Genki 1.3,0
-早い,はやい,Early,Genki 1.3,0
-全然,ぜんぜん,"Not at all, never",Genki 1.3,0
-時々,ときどき,Sometimes,Genki 1.3,0
+誰,だれ,Who,Genki 1.2,1
+魚,さかな,Fish,Genki 1.2,1
+肉,にく,Meat,Genki 1.2,1
+野菜,やさい,Vegetable,Genki 1.2,1
+本,ほん,"Book, counter for long objects",Genki 1.2,1
+お願い,おねがい,Please ,Genki 1.3,1
+映画,えいが,Movie,Genki 1.3,1
+音楽,おんがく,Music,Genki 1.3,1
+雑誌,ざっし,Magazine,Genki 1.3,1
+酒,さけ,Alcohol,Genki 1.3,1
+茶,ちゃ,Tea,Genki 1.3,1
+水,みず,Water,Genki 1.3,1
+朝ご飯,あさごはん,Breakfast,Genki 1.3,1
+昼ご飯,ひるごはん,Lunch,Genki 1.3,1
+晩ご飯,ばんごはん,Dinner,Genki 1.3,1
+家,いえ,House,Genki 1.3,1
+今日,きょう,Today,Genki 1.3,1
+朝,あさ,Morning,Genki 1.3,1
+今晩,こんばん,Tonight,Genki 1.3,1
+毎日,まいにち,Everyday,Genki 1.3,1
+毎朝,まいあさ,Every morning,Genki 1.3,1
+毎晩,まいばん,Every night,Genki 1.3,1
+週末,しゅうまつ,Weekend,Genki 1.3,1
+土曜日,どようび,Saturday,Genki 1.3,1
+日曜日,にちようび,Sunday,Genki 1.3,1
+行く,いく,To go,Genki 1.3,1
+帰る,かえる,To return home,Genki 1.3,2
+聞く,きく,"To listen, to ask",Genki 1.3,1
+読む,よむ,To read,Genki 1.3,1
+飲む,のむ,To drink,Genki 1.3,1
+話す,はなす,To speak,Genki 1.3,1
+勉強する,べんきょうする,To study,Genki 1.3,1
+起きる,おきる,To get up,Genki 1.3,1
+食べる,たべる,To eat,Genki 1.3,1
+寝る,ねる,To go to bed,Genki 1.3,1
+見る,みる,To see,Genki 1.3,1
+来る,くる,To come,Genki 1.3,1
+早い,はやい,Early,Genki 1.3,2
+全然,ぜんぜん,"Not at all, never",Genki 1.3,1
+時々,ときどき,Sometimes,Genki 1.3,1
 買い物,かいもの,Shopping,Genki 1.4,0
 犬,いぬ,Dog,Genki 1.4,0
 猫,ねこ,Cat,Genki 1.4,0
@@ -137,7 +137,7 @@
 返す,かえす,To return,Genki 1.6,0
 座る,すわる,To sit,Genki 1.6,0
 立つ,たつ,To stand,Genki 1.6,0
-たばこをすう,たばこをすう,To smoke,Genki 1.6,0
+たばこを吸う,たばこをすう,To smoke,Genki 1.6,0
 使う,つかう,To use,Genki 1.6,0
 手伝う,てつだう,To help,Genki 1.6,0
 入る,はいる,To enter,Genki 1.6,0
