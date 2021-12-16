@@ -1,9 +1,12 @@
 <template>
   <div class="hello">
+
     <h1 style="font-weight:bold; color:rgb(46, 24, 145);">L.U.N.A.L.A</h1>
+
     <p style="margin-bottom:40px">
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
+
     <b-form-group v-slot="{ ariaDescribedby }">
       <b-form-checkbox-group
         v-model="selected_diff"
@@ -13,6 +16,7 @@
         @change="updateChecklist()"
       ></b-form-checkbox-group>
     </b-form-group>
+
     <b-form-group v-slot="{ ariaDescribedby }">
       <b-form-checkbox-group
         v-model="selected_cards"
@@ -22,16 +26,41 @@
         @change="updateChecklist()"
       ></b-form-checkbox-group>
     </b-form-group>
-    <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="generateCards()">Generate Cards</b-button>
-    <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="generateCards()">Update Difficulties</b-button>
+
+    <b-button class="button" 
+      style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" 
+      @click="generateCards()"
+      v-b-tooltip.hover.left title="Generate a new shuffled batch of cards with the above selection fields."
+      data-toggle="tooltip"
+      >Generate Cards</b-button>
+
+    <b-button class="button" 
+      style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" 
+      @click="setDifficulties()"
+      v-b-tooltip.hover.right title="Toggle on/off whether clicking a card changes the language or the difficulty."
+      data-toggle="tooltip"
+      >Update Difficulties</b-button>
+
     <div v-if="dataLoaded" class="card_div">
       <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
-        <b-card v-for="item in row" :key="item" class="card" text-variant="white" :header='getDifficulty(vocab_file["Difficulty"][item])'>
+        <b-card v-for="item in row" 
+          :key="item" 
+          class="card" 
+          text-variant="white" 
+          :header='getDifficulty(vocab_file["Difficulty"][item])' 
+          header-bg-variant="info"
+          >
           <b-card-text class="card_text">{{getText(item)}}</b-card-text>
-          <button class="stretched-link" style="height:0px; background-color:rgb(46, 24, 145); border-style:none" @click="cycleCard(item)"></button>
+          <button class="stretched-link" 
+            style="height:0px; background-color:rgb(46, 24, 145); border-style:none" 
+            @click="cycleCard(item)"></button>
         </b-card>
       </b-card-group>
       <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="getCards()">Next Cards</b-button>
+    </div>
+
+    <div>
+      <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="replaceCSV">Save Changes</b-button> 
     </div>
 
     <b-form-file
@@ -71,7 +100,8 @@ export default {
       difficulties: ["New", "Easy", "Medium", "Hard"],
       numCards: [14, 35, 70, 140, 280, 469],
       selected_diff: ["New", "Easy", "Medium", "Hard"],
-      selected_cards: [35]
+      selected_cards: [35],
+      difficultyMode: false
     }
   },
   methods: {
@@ -150,10 +180,10 @@ export default {
       this.offset = 0;
       this.shuffleCards();
       this.getCards(this.offset);
-      this.offset += this.selected_cards[0];
     },
     getCards() {
       if (this.offset <= Object.keys(this.vocab_file['Kanji']).length) {
+        window.scrollTo(0, 400);
         let breakEarly = false;
         // console.log(numSet);
         this.cardGrid = [];
@@ -171,6 +201,7 @@ export default {
             catch (error) {
               console.log("Not enough cards in the deck");
               breakEarly = true;
+              currRow.pop();
               break;
             }
           }
@@ -218,12 +249,26 @@ export default {
       return this.vocab_file["English"][item];
     },
     cycleCard(item) {
-      this.cardStates[item] = this.cardStates[item] + 1; 
-      if (this.cardStates[item] > 2) {
-        this.cardStates[item] = 0;
+      if (!this.difficultyMode) {
+        this.cardStates[item] = this.cardStates[item] + 1; 
+        if (this.cardStates[item] > 2) {
+          this.cardStates[item] = 0;
+        }
+        // console.log(this.cardStates[item]);
       }
-      // console.log(this.cardStates[item]);
+      else {
+        console.log(this.vocab_file["Difficulty"])
+        if (this.vocab_file["Difficulty"][item] < 3) {
+          this.vocab_file["Difficulty"][item] = this.vocab_file["Difficulty"][item] + 1;
+        }
+        else {
+          this.vocab_file["Difficulty"][item] = 0;
+        }
+      }
       this.$forceUpdate();
+    },
+    setDifficulties() {
+      this.difficultyMode = !this.difficultyMode;
     },
     updateChecklist() {
       let currCard = this.selected_cards[this.selected_cards.length-1];
@@ -258,8 +303,8 @@ export default {
   margin-top: 30px;
 }
 .card_div {
-  overflow-y: auto; 
-  height: 1000px;
+  /* overflow-y: auto; 
+  height: 1000px; */
 }
 .cards {
   margin: auto;
