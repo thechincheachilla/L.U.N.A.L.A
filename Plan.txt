@@ -1,0 +1,8 @@
+- Use p5.js
+- Create an n*n grid of "card" objects; make these Processing rectangles 
+	- Create a function to create each card, a parent function to for-thru a 2D grid
+- Buttons for difficulty:
+	- All, New, 1, 2, 3, 4, 5, ... 
+- Depending on selection, when user hits submit, randomly pull in Kanji characters 
+- First click of a card --> hiragana, second click --> english 
+- Allow user to set difficulties of each card; directly modify the excel file 
