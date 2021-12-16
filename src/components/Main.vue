@@ -71,7 +71,7 @@ export default {
       difficulties: ["New", "Easy", "Medium", "Hard"],
       numCards: [14, 35, 70, 140, 280, 469],
       selected_diff: ["New", "Easy", "Medium", "Hard"],
-      selected_cards: [36]
+      selected_cards: [35]
     }
   },
   methods: {
