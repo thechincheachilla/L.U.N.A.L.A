@@ -36,12 +36,6 @@ Install: ```pip install Flask==1.1.2 Flask-Cors==3.0.10```
 Pandas: ```pip install pandas```\
 Axios: ```npm install axios ```
 
-### Running the server
-Navigate to the server directory\
-Activate: ```source env/Scripts/activate```\
-Navigate to the env directory\
-Run: ```python app.py```
-
 ### Deployment on GH-Pages
 Run: ```npm run-script deploy```\
 Navigate to GH-Pages, ensure correct branch is selected\

@@ -80,7 +80,10 @@ export default {
       await axios.get(path)
         .then((res) => {
           this.vocab_file = res.data;
-          console.log(this.vocab_file)
+          console.log('Vocab data:', this.vocab_file);
+        })
+        .catch(() => {
+          alert("API connection failed; please input your own CSV");
         })
     },
     loadCSV(ev) {
@@ -92,7 +95,8 @@ export default {
     checkData(file) {
       let fileAsLines = file.split("\n");
       let headers = fileAsLines[0].split(",");
-      console.log(headers)
+      headers[headers.length-1] = headers[headers.length-1].replace(/^[\r\n]+|\.|[\r\n]+$/g, "");
+      console.log('Headers:', headers)
       if (headers.length != NUM_HEADERS) {
         alert("CSV File not correctly formatted. \n\n\
               The CSV should contain columns in the order of: \n\
@@ -101,6 +105,7 @@ export default {
       }
     },
     async replaceCSV() {
+      console.log("FILE", this.file_input)
       if (this.file_input != []) {
         let formData = new FormData();
         formData.append('file', this.file_input);
@@ -109,9 +114,9 @@ export default {
           headers: {
             'Content-Type': 'multipart/form-data' 
           }
-        }).then(function() {
+        }).then(() => {
           console.log('File successfully sent');
-        }).catch(function() {
+        }).catch(() => {
           console.log('File failed to send')
         });
         await this.getVocab();
@@ -139,7 +144,7 @@ export default {
         }
       }
       this.numSet = shuffle(this.numSet);
-      console.log(this.numSet.length, this.numSet)
+      //console.log(this.numSet.length, this.numSet)
     },
     generateCards() {
       this.offset = 0;
@@ -170,7 +175,7 @@ export default {
             }
           }
           this.cardGrid.push(currRow);
-          console.log(this.cardGrid)
+          // console.log(this.cardGrid)
         }
         this.offset += this.selected_cards[0];
         // console.log(this.cardGrid);
