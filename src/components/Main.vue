@@ -7,28 +7,66 @@
 
     <b-form-file
       class="file_in"
-      v-model="file1"
-      :state="Boolean(file1)"
+      v-model="file_input"
+      :state="Boolean(file_input)"
       accept=".csv"
       placeholder="Choose a replacement CSV here..."
       drop-placeholder="Drop file here..."
+      @change="loadCSV"
     ></b-form-file>
-    <div class="mt-3">Selected file: {{ file1 ? file1.name : '' }}</div>
+    <div class="mt-3">Selected file: {{ file_input ? file_input.name : '' }}</div>
+    <b-button class="button" @click="replaceCSV">Submit</b-button> 
     
   </div>
 </template>
 
 <script>
+const NUM_HEADERS = 6;
+
 export default {
   name: 'Main',
   props: {
     msg: String
+  },
+  data() {
+    return {
+      file_input: []
+    }
+  },
+  methods: {
+    loadCSV(ev) {
+      const newFile = ev.target.files[0]
+      const reader = new FileReader();
+      reader.readAsText(newFile);
+      reader.onload = e => this.checkData(e.target.result);
+    },
+    checkData(file) {
+      let fileAsLines = file.split("\n");
+      let headers = fileAsLines[0].split(",");
+      console.log(headers)
+      if (headers.length != NUM_HEADERS) {
+        alert("CSV File not correctly formatted. \n\n\
+              The CSV should contain columns in the order of: \n\
+              Kanji, Hiragana, English, Origin, Difficulty, and New")
+        this.file_input = [];
+      }
+    },
+    replaceCSV() {
+      const reader = new FileReader();
+      reader.readAsText("../assets/Vocabulary.csv");
+      console.log("../assets/Vocabulary.csv");
+      
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.button {
+  margin-top: 20px;
+  background-color:rgb(46, 24, 145)
+}
 .file_in {
   width: 20%;
   text-align: left;

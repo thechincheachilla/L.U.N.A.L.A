@@ -22,3 +22,10 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### Running the server
+Navigate to the server directory
+Activate: source env/Scripts/activate 
+Run: python app.py
+    
