@@ -4,6 +4,13 @@
     <p>
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
+    <div v-if="dataLoaded">
+      <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
+        <b-card v-for="item in row" :key="item" class="card" text-variant="white" :header='getDifficulty(vocab_file["Difficulty"][item])'>
+          <b-card-text class="card_text">{{vocab_file["Kanji"][item]}}</b-card-text>
+        </b-card>
+      </b-card-group>
+    </div>
 
     <b-form-file
       class="file_in"
@@ -16,7 +23,6 @@
     ></b-form-file>
     <div>
       <b-button class="button" @click="replaceCSV">Submit</b-button> 
-      <b-button class="button" @click="getVocab">Test</b-button> 
     </div>
     
   </div>
@@ -25,7 +31,9 @@
 <script>
 import axios from 'axios'
 
-const NUM_HEADERS = 6;
+const NUM_HEADERS = 5;
+const INIT_ROWS = 6;
+const CARDS_PER_ROW = 6;
 
 export default {
   name: 'Main',
@@ -36,14 +44,18 @@ export default {
     return {
       vocab_file: [],
       file_input: [],
+      cards: [],
+      cardGrid: [],
+      dataLoaded: false,
     }
   },
   methods: {
-    getVocab() {
+    async getVocab() {
       let path = 'http://localHost:5000/getVocab'
-      axios.get(path)
+      await axios.get(path)
         .then((res) => {
-          console.log(res.data)
+          this.vocab_file = res.data;
+          console.log(this.vocab_file)
         })
     },
     loadCSV(ev) {
@@ -59,7 +71,7 @@ export default {
       if (headers.length != NUM_HEADERS) {
         alert("CSV File not correctly formatted. \n\n\
               The CSV should contain columns in the order of: \n\
-              Kanji, Hiragana, English, Origin, Difficulty, and New")
+              Kanji, Hiragana, English, Origin, and Difficulty")
         this.file_input = [];
       }
     },
@@ -77,12 +89,61 @@ export default {
         }).catch(function() {
           console.log('File failed to send')
         });
-        this.getVocab();
+        await this.getVocab();
+        this.initCards();
+      }
+    },
+    initCards() {
+      let shuffle = function(arr) {
+        let currIndex = arr.length, randomIndex;
+        while (currIndex !== 0) {
+          randomIndex = Math.floor(Math.random() * currIndex);
+          currIndex--;
+          [arr[currIndex], arr[randomIndex]] = [arr[randomIndex], arr[currIndex]];
+        }
+        return arr;
+      }
+      let numCards = Object.keys(this.vocab_file['Kanji']).length;
+      let numSet = [];
+      for (let i = 0; i < numCards; i++) {
+        numSet.push(i);
+      }
+      numSet = shuffle(numSet);
+      console.log(numSet);
+      this.cardGrid = [];
+      for (let i = 0; i < INIT_ROWS; i++) {
+        let currRow = [];
+        for (let j = 0; j < CARDS_PER_ROW; j++) {
+          try {
+            currRow.push(numSet[CARDS_PER_ROW*i+j]);
+          }
+          catch (error) {
+            alert("Not enough cards in the deck");
+          }
+        }
+        this.cardGrid.push(currRow);
+      }
+      console.log(this.cardGrid);
+    },
+    getDifficulty(num) {
+      if (num === 0) {
+        return "New"
+      }
+      if (num === 1) {
+        return "Easy"
+      }
+      if (num === 2) {
+        return "Medium"
+      }
+      if (num === 3) {
+        return "Hard"
       }
     }
   }, 
-  beforeMount() {
-    this.getVocab();
+  async beforeMount() {
+    await this.getVocab();
+    this.initCards();
+    this.dataLoaded = true; 
   }
 }
 </script>
@@ -96,6 +157,18 @@ export default {
 .file_in {
   width: 20%;
   text-align: left;
+}
+.cards {
+  margin: auto;
+  width: 80%;
+  margin-bottom: 20px;
+}
+.card {
+  background-color:rgb(46, 24, 145);
+}
+.card_text {
+  font-size: 30px;
+  color:rgb(255, 255, 255);
 }
 h1 {
   margin: 20px 0 10px;
