@@ -12,6 +12,9 @@ export default {
   name: 'App',
   components: {
     Main
+  },
+  created() {
+    document.title = "L.U.N.A.L.A";
   }
 }
 </script>

@@ -31,7 +31,7 @@ Install: ```pip install Flask==1.1.2 Flask-Cors==3.0.10```
 
 ### Required imports
 Pandas: ```pip install pandas```\
-Axios: ```npm install axios ```
+Axios: ```npm install axios ```\
 
 ### Running the server
 Navigate to the server directory\
