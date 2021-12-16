@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "node scripts/gh-pages-deploy.js"
+    "deploy": "sh deploy.sh"
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5",
@@ -30,8 +30,7 @@
     "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
     "vue-cli-plugin-bootstrap-vue": "~0.8.2",
-    "vue-template-compiler": "^2.6.11",
-    "execa": "latest"
+    "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
     "root": true,
