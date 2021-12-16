@@ -1,6 +1,7 @@
 # L.U.N.A.L.A
 
-Hosted on https://thechincheachilla.github.io/Lunala/
+Hosted on https://thechincheachilla.github.io/Lunala/ \
+Note: Does not work; flask application currently not hosted
 
 ## Project setup
 ```
