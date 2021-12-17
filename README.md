@@ -1,6 +1,6 @@
 # L.U.N.A.L.A
 
-Hosted on https://thechincheachilla.github.io/Lunala/ \
+Hosted on https://thechincheachilla.github.io/L.U.N.A.L.A/ \
 Note: Does not work on the web; flask application currently not hosted
 
 ### Setup Instructions
