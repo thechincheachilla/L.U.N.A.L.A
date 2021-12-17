@@ -118,8 +118,8 @@ export default {
       Alerts the user on failure. 
     */
     async getVocab() {
-      // let path = 'http://localHost:5000/getVocab'
-      let path = 'https://128.208.1.141:5000/getVocab'
+      let path = 'https://localHost:5000/getVocab'
+      // let path = 'https://128.208.1.141:5000/getVocab'
       await axios.get(path)
         .then((res) => {
           this.vocab_file = res.data;
@@ -172,8 +172,8 @@ export default {
       if (this.file_input != []) {
         let formData = new FormData();
         formData.append('file', this.file_input);
-        // let path = 'http://localHost:5000/replace'
-        let path = 'https://128.208.1.141:5000/replace'
+        let path = 'https://localHost:5000/replace'
+        // let path = 'https://128.208.1.141:5000/replace'
         await axios.post(path, formData, { 
           headers: {
             'Content-Type': 'multipart/form-data' 
@@ -377,8 +377,8 @@ export default {
       Sends the updated cards to the flask API app. Overwrites the original vocabulary file 
     */
     async saveChanges() {
-      // let path = 'http://localHost:5000/saveCSV'
-      let path = 'https://128.208.1.141:5000/saveCSV'
+      let path = 'https://localHost:5000/saveCSV'
+      // let path = 'https://128.208.1.141:5000/saveCSV'
       axios.post(path, this.vocab_file)
         .then(() => {
           console.log("File successfully sent");
@@ -432,7 +432,7 @@ export default {
   background-color:rgb(46, 24, 145);
 }
 .card_text {
-  font-size: 30px;
+  font-size: 27px;
   color:rgb(255, 255, 255);
 }
 h1 {
