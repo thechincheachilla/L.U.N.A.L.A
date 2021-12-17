@@ -89,8 +89,8 @@
 <script>
 import axios from 'axios'
 
-const NUM_HEADERS = 5;
-const CARDS_PER_ROW = 7;
+const NUM_HEADERS = 5;    // Number of headers the file validator checks for in user input files
+const CARDS_PER_ROW = 7;  // Number of cards to display per row 
 
 export default {
   name: 'Main',
@@ -150,7 +150,7 @@ export default {
     checkData(file) {
       let fileAsLines = file.split("\n");
       let headers = fileAsLines[0].split(",");
-      headers[headers.length-1] = headers[headers.length-1].replace(/^[\r\n]+|\.|[\r\n]+$/g, "");
+      headers[headers.length-1] = headers[headers.length-1].replace(/^[\r\n]+|\.|[\r\n]+$/g, ""); // Remove final carriage return on last item 
       console.log('Headers:', headers)
       if (headers.length != NUM_HEADERS) {
         alert("CSV File not correctly formatted. \n\n\
@@ -182,6 +182,8 @@ export default {
           alert('File failed to send');
           console.log("File send error:", error)
         });
+
+        // Make new card deck 
         await this.getVocab();
         this.selected_diff = ["New", "Easy", "Medium", "Hard"];
         this.selected_cards = [36];
@@ -196,6 +198,8 @@ export default {
       Shuffles all the cards in the card list. 
     */
     shuffleCards() {
+
+      // Fisher-Yates algorithm 
       let shuffle = function(arr) {
         let currIndex = arr.length, randomIndex;
         while (currIndex !== 0) {
@@ -205,9 +209,11 @@ export default {
         }
         return arr;
       }
-      let numCards = Object.keys(this.vocab_file['Kanji']).length;
+      let numCards = Object.keys(this.vocab_file['Kanji']).length; // Numver of cards in the deck 
       this.numSet = [];
       for (let i = 0; i < numCards; i++) {
+
+        // Only include cards that are of the user selected difficulty 
         if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
           this.numSet.push(i);
         }
@@ -232,10 +238,9 @@ export default {
     */
     getCards() {
       if (this.offset <= Object.keys(this.vocab_file['Kanji']).length) {
-        window.scrollTo(0, 400);
-        let breakEarly = false;
-        // console.log(numSet);
-        this.cardGrid = [];
+        window.scrollTo(0, 400); // Scroll to top of page every time next batch retrieved
+        let breakEarly = false;  // Boolean: if cards to display run out 
+        this.cardGrid = [];     
         let numRows = this.selected_cards[0]/CARDS_PER_ROW;
         for (let i = 0; i < numRows; i++) {
           if (breakEarly) {
@@ -243,6 +248,8 @@ export default {
           }
           let currRow = [];
           for (let j = 0; j < CARDS_PER_ROW; j++) {
+
+            // If possible, add the next card from the shuffled array to the grid and init to the logographic text 
             try {
               currRow.push(this.numSet[CARDS_PER_ROW*i+j+this.offset]);
               this.cardStates[this.numSet[CARDS_PER_ROW*i+j+this.offset].toString()] = 0;
@@ -250,14 +257,14 @@ export default {
             catch (error) {
               console.log("Not enough cards in the deck");
               breakEarly = true;
-              currRow.pop();
+              currRow.pop(); // Remove the "undefined" element that was added 
               break;
             }
           }
-          this.cardGrid.push(currRow);
+          this.cardGrid.push(currRow); // Add the completed row to the 2D card grid 
           // console.log(this.cardGrid)
         }
-        this.offset += this.selected_cards[0];
+        this.offset += this.selected_cards[0]; // Increment the paging offset for the next batch 
         // console.log(this.cardGrid);
         // console.log(this.cardStates);
       }
@@ -318,6 +325,8 @@ export default {
       for the term or the difficulty. 
     */
     cycleCard(item) {
+      
+      // Cycle text state
       if (!this.difficultyMode) {
         this.cardStates[item] = this.cardStates[item] + 1; 
         if (this.cardStates[item] > 2) {
@@ -325,6 +334,8 @@ export default {
         }
         // console.log(this.cardStates[item]);
       }
+
+      // Cycle difficlty state
       else {
         console.log(this.vocab_file["Difficulty"])
         if (this.vocab_file["Difficulty"][item] < 3) {
@@ -351,6 +362,8 @@ export default {
     */
     updateChecklist() {
       let currCard = this.selected_cards[this.selected_cards.length-1];
+
+      // Only allow user to select a single card_number option
       this.selected_cards = [];
       this.selected_cards.push(currCard);
       // console.log(this.selected_diff)
