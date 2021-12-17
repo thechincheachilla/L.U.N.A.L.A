@@ -119,7 +119,7 @@ export default {
     */
     async getVocab() {
       // let path = 'http://localHost:5000/getVocab'
-      let path = 'http://128.208.1.141:5000/getVocab'
+      let path = 'https://128.208.1.141:5000/getVocab'
       await axios.get(path)
         .then((res) => {
           this.vocab_file = res.data;
@@ -173,7 +173,7 @@ export default {
         let formData = new FormData();
         formData.append('file', this.file_input);
         // let path = 'http://localHost:5000/replace'
-        let path = 'http://128.208.1.141:5000/replace'
+        let path = 'https://128.208.1.141:5000/replace'
         await axios.post(path, formData, { 
           headers: {
             'Content-Type': 'multipart/form-data' 
@@ -378,7 +378,7 @@ export default {
     */
     async saveChanges() {
       // let path = 'http://localHost:5000/saveCSV'
-      let path = 'http://128.208.1.141:5000/saveCSV'
+      let path = 'https://128.208.1.141:5000/saveCSV'
       axios.post(path, this.vocab_file)
         .then(() => {
           console.log("File successfully sent");

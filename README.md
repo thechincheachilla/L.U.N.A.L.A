@@ -12,7 +12,8 @@ Note: PIP must be installed. If not, install PIP from Python; it comes included:
 Navigate to the server directory \
 Run: ```python -m venv env```\
 Run: ```source env/bin/activate``` \
-Run: ```pip install Flask==1.1.2 Flask-Cors==3.0.10```
+Run: ```pip install Flask==1.1.2 Flask-Cors==3.0.10```\
+Run: ```pip install pyopenssl```
 
 ### 2. Additional Required imports
 To install Pandas, navigate to the server directory \
