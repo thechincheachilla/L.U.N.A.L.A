@@ -7,13 +7,8 @@ Note: Does not work on the web; flask application currently not hosted
 A detailed instructional guide can be found here: https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/ \
 The following commands assume that you are using a GIT terminal. I suggest GIT bash here: https://git-scm.com/downloads
 
-### 1. Flask Setup
-Note: PIP must be installed. If not, install PIP from Python; it comes included: https://www.python.org/downloads/
-Navigate to the server directory \
-Run: ```python -m venv env```\
-Run: ```source env/bin/activate``` \
-Run: ```pip install Flask==1.1.2 Flask-Cors==3.0.10```\
-Run: ```pip install pyopenssl```
+### 1. API Setup
+Go to the lunala-api: https://github.com/thechincheachilla/lunala-api
 
 ### 2. Additional Required imports
 To install Pandas, navigate to the server directory \
@@ -23,7 +18,7 @@ Run: ```npm install```\
 To install Axios, navigate to the lunala directory \
 Run: ```npm install axios ```
 
-### 3. Run the API Flask app
+### 3. Run the API Flask app (Local only)
 Navigate to the server directory and repeat the following flask setup steps: \
 Run: ```python -m venv env```\
 Run: ```source env/bin/activate``` \
