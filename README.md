@@ -34,7 +34,7 @@ Head to http://localhost:8080/
 ### Deployment on GH-Pages
 Run: ```npm run-script deploy```\
 Navigate to GH-Pages, ensure correct branch is selected \
-Currently hosted on https://thechincheachilla.github.io/Lunala/
+Currently hosted on https://thechincheachilla.github.io/L.U.N.A.L.A/
 
 
 ## VUE Project setup
