@@ -41,7 +41,7 @@ Navigate to GH-Pages, ensure correct branch is selected \
 Currently hosted on https://thechincheachilla.github.io/Lunala/
 
 
-## Project setup
+## VUE Project setup
 ```
 npm install
 ```

@@ -7,6 +7,7 @@
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
 
+    <!-- Difficulty selection field -->
     <b-form-group v-slot="{ ariaDescribedby }">
       <b-form-checkbox-group
         v-model="selected_diff"
@@ -17,6 +18,7 @@
       ></b-form-checkbox-group>
     </b-form-group>
 
+    <!-- Card amount selection field -->
     <b-form-group v-slot="{ ariaDescribedby }">
       <b-form-checkbox-group
         v-model="selected_cards"
@@ -27,6 +29,7 @@
       ></b-form-checkbox-group>
     </b-form-group>
 
+    <!-- Generate Cards button -->
     <b-button class="button" 
       style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" 
       @click="generateCards()"
@@ -34,6 +37,7 @@
       data-toggle="tooltip"
       >Generate Cards</b-button>
 
+    <!-- Update Difficulties toggle button -->
     <b-button class="button" 
       style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" 
       @click="setDifficulties()"
@@ -41,6 +45,7 @@
       data-toggle="tooltip"
       >Update Difficulties</b-button>
 
+    <!-- Card Deck: only display after data collected from flask app -->
     <div v-if="dataLoaded" class="card_div">
       <b-card-group deck v-for="row in cardGrid" :key="cardGrid.indexOf(row)" class="cards"> 
         <b-card v-for="item in row" 
@@ -59,10 +64,12 @@
       <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="getCards()">Next Cards</b-button>
     </div>
 
+    <!-- Save Changes button -->
     <div>
       <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="saveChanges()">Save Changes</b-button> 
     </div>
 
+    <!-- User form input field -->
     <b-form-file
       class="file_in"
       v-model="file_input"
@@ -89,22 +96,27 @@ export default {
   name: 'Main',
   data() {
     return {
-      vocab_file: [],
-      file_input: [],
-      cards: [],
-      offset: 0,
-      numSet: [],
-      cardGrid: [],
-      cardStates: {},
-      dataLoaded: false,
-      difficulties: ["New", "Easy", "Medium", "Hard"],
-      numCards: [14, 35, 70, 140, 280, 469],
-      selected_diff: ["New", "Easy", "Medium", "Hard"],
-      selected_cards: [35],
-      difficultyMode: false
+      vocab_file: [],     // Not actually a file; JSON object of the cards to display
+      file_input: [],     // The actual input file
+      offset: 0,          // The paging offset 
+      numSet: [],         // List of the order in which cards are displayed
+      cardGrid: [],       // The cardgrid to display (2D array)
+      cardStates: {},     // The text state of the cards
+      dataLoaded: false,  // Boolean: determine if init data retrieved
+      difficulties: ["New", "Easy", "Medium", "Hard"],  // Difficulty selection options
+      numCards: [14, 35, 70, 140, 280, 469],            // Card amount selection options
+      selected_diff: ["New", "Easy", "Medium", "Hard"], // Initial difficulties selected
+      selected_cards: [35], // Initial card selection
+      difficultyMode: false // Initial difficulty mode toggle 
     }
   },
   methods: {
+
+    /*
+      getVocab method: 
+      Retrieves the vocabulary CSV file from the flask API as a JSON object.
+      Alerts the user on failure. 
+    */
     async getVocab() {
       let path = 'http://localHost:5000/getVocab'
       await axios.get(path)
@@ -116,12 +128,25 @@ export default {
           alert("API connection failed; please input your own CSV");
         })
     },
+
+    /*
+      loadCSV method:
+      Upon user file input, reads the file as text and ensures its headers
+      are properly formatted (see checkData).
+    */
     loadCSV(ev) {
       const newFile = ev.target.files[0]
       const reader = new FileReader();
       reader.readAsText(newFile);
       reader.onload = e => this.checkData(e.target.result);
     },
+
+    /*
+      checkData method: 
+      Accepts a string formatted CSV file (file parameter).
+      Ensures the headers are properly formatted; if not, discards the 
+      user input file. 
+    */
     checkData(file) {
       let fileAsLines = file.split("\n");
       let headers = fileAsLines[0].split(",");
@@ -134,6 +159,13 @@ export default {
         this.file_input = [];
       }
     },
+
+    /*
+      replaceCSV method:
+      Sends the user input file to the flask API and replaces the old file. 
+      Resets default selection fields. 
+      Generates a new set of cards from the new file. 
+    */
     async replaceCSV() {
       console.log("FILE", this.file_input)
       if (this.file_input != []) {
@@ -157,6 +189,12 @@ export default {
         this.generateCards(0);
       }
     },
+
+    /*
+      shuffleCards method:
+      Filters cards to display based on the user selection. 
+      Shuffles all the cards in the card list. 
+    */
     shuffleCards() {
       let shuffle = function(arr) {
         let currIndex = arr.length, randomIndex;
@@ -177,11 +215,21 @@ export default {
       this.numSet = shuffle(this.numSet);
       //console.log(this.numSet.length, this.numSet)
     },
+
+    /*
+      generateCards method:
+      Generates a new set of cards to display. 
+    */
     generateCards() {
       this.offset = 0;
       this.shuffleCards();
       this.getCards(this.offset);
     },
+
+    /*
+      getCards method:
+      Retrieves the next batch of cards to display to the user through the use of paging.
+    */
     getCards() {
       if (this.offset <= Object.keys(this.vocab_file['Kanji']).length) {
         window.scrollTo(0, 400);
@@ -214,6 +262,13 @@ export default {
         // console.log(this.cardStates);
       }
     },
+
+    /*
+      getDifficulty method:
+      Maps integer representations of difficulty to strings,
+      or string representations of difficulty to integers. 
+      Returns the interprested value of the input. 
+    */
     getDifficulty(num) {
       if (num === 0) {
         return "New"
@@ -240,6 +295,12 @@ export default {
         return 3
       }
     },
+
+    /*
+      getText method: 
+      Accepts an integer row index of the original CSV (item).
+      Returns the text to display on the card to the user 
+    */
     getText(item) {
       if (this.cardStates[item] === 0) {
         return this.vocab_file["Kanji"][item];
@@ -249,6 +310,13 @@ export default {
       }
       return this.vocab_file["English"][item];
     },
+
+    /*
+      cycleCard method:
+      Accepts an integer row index of the original CSV (item). 
+      From user clicks on a card, cycles through the text display 
+      for the term or the difficulty. 
+    */
     cycleCard(item) {
       if (!this.difficultyMode) {
         this.cardStates[item] = this.cardStates[item] + 1; 
@@ -268,9 +336,19 @@ export default {
       }
       this.$forceUpdate();
     },
+
+    /*
+      setDifficulties method: 
+      Toggles the difficulty selection mode. 
+    */
     setDifficulties() {
       this.difficultyMode = !this.difficultyMode;
     },
+
+    /*
+      updateChecklist method:
+      Updates the selection checklist (ensures the user can only select one of the card_number options).
+    */
     updateChecklist() {
       let currCard = this.selected_cards[this.selected_cards.length-1];
       this.selected_cards = [];
@@ -278,6 +356,11 @@ export default {
       // console.log(this.selected_diff)
       // console.log(this.selected_cards)
     },
+
+    /*
+      saveChanges method: 
+      Sends the updated cards to the flask API app. Overwrites the original vocabulary file 
+    */
     async saveChanges() {
       let path = 'http://localHost:5000/saveCSV'
       axios.post(path, this.vocab_file)
@@ -290,6 +373,12 @@ export default {
         })
     }
   }, 
+
+  /*
+    beforeMount:
+    Ensure the vocabulary file is retrieved and the first set of shuffled cards is displayed 
+    before executing anything else. 
+  */
   async beforeMount() {
     await this.getVocab();
     this.shuffleCards();
