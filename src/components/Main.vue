@@ -118,7 +118,7 @@ export default {
       Alerts the user on failure. 
     */
     async getVocab() {
-      let path = 'https://localHost:5000/getVocab'
+      let path = 'http://localHost:5000/getVocab'
       // let path = 'https://128.208.1.141:5000/getVocab'
       await axios.get(path)
         .then((res) => {
@@ -172,7 +172,7 @@ export default {
       if (this.file_input != []) {
         let formData = new FormData();
         formData.append('file', this.file_input);
-        let path = 'https://localHost:5000/replace'
+        let path = 'http://localHost:5000/replace'
         // let path = 'https://128.208.1.141:5000/replace'
         await axios.post(path, formData, { 
           headers: {
@@ -377,7 +377,7 @@ export default {
       Sends the updated cards to the flask API app. Overwrites the original vocabulary file 
     */
     async saveChanges() {
-      let path = 'https://localHost:5000/saveCSV'
+      let path = 'http://localHost:5000/saveCSV'
       // let path = 'https://128.208.1.141:5000/saveCSV'
       axios.post(path, this.vocab_file)
         .then(() => {
