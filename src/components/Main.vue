@@ -60,7 +60,7 @@
     </div>
 
     <div>
-      <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="replaceCSV">Save Changes</b-button> 
+      <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="saveChanges()">Save Changes</b-button> 
     </div>
 
     <b-form-file
@@ -146,8 +146,9 @@ export default {
           }
         }).then(() => {
           console.log('File successfully sent');
-        }).catch(() => {
-          console.log('File failed to send')
+        }).catch((error) => {
+          alert('File failed to send');
+          console.log("File send error:", error)
         });
         await this.getVocab();
         this.selected_diff = ["New", "Easy", "Medium", "Hard"];
@@ -276,6 +277,17 @@ export default {
       this.selected_cards.push(currCard);
       // console.log(this.selected_diff)
       // console.log(this.selected_cards)
+    },
+    async saveChanges() {
+      let path = 'http://localHost:5000/saveCSV'
+      axios.post(path, this.vocab_file)
+        .then(() => {
+          console.log("File successfully sent");
+        })
+        .catch((error) => {
+          alert("File failed to send");
+          console.log("File send error:", error);
+        })
     }
   }, 
   async beforeMount() {
