@@ -370,7 +370,6 @@ export default {
 
       // Cycle difficlty state
       else {
-        console.log(this.vocab_file["Difficulty"])
         if (this.vocab_file["Difficulty"][item] < 3) {
           this.vocab_file["Difficulty"][item] = this.vocab_file["Difficulty"][item] + 1;
         }
@@ -421,10 +420,8 @@ export default {
           alert("API connection failed; please try again.");
         })
       Object.keys(credentials).forEach(user => {
-        console.log(user, credentials[user])
         if (this.user_in === user) {
           if (this.pass_in === credentials[this.user_in]) {
-            console.log("PASS")
             this.userAuth = true;
             return true;
           }
