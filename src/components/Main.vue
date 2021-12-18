@@ -66,8 +66,8 @@
 
     <!-- Save Changes button -->
     <div>
-      <!-- <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="saveChanges()">Save Changes</b-button>  -->
-      <b-button variant="info" style="margin-bottom:40px; margin-top:40px" v-b-modal.auth-modal @click="replace=false">Save Changes</b-button> 
+      <b-button class="button" style="margin-bottom:40px; margin-top:40px; background-color:rgb(23, 162, 184)" v-b-modal.auth-modal @click="replace=false">Save Changes</b-button> 
+      <b-button class="button" style="margin-bottom:40px; margin-top:40px" href="https://lunala-api.herokuapp.com/getCSV" target="_blank">Download Flashcards</b-button> 
     </div>
 
     <!-- User form input field -->
@@ -84,6 +84,7 @@
       <b-button class="button" style="margin-bottom:40px" v-b-modal.auth-modal @click="replace=true">Submit</b-button> 
     </div>
     
+    <!-- Popup auth modal for overwrites -->
     <b-modal id="auth-modal" hide-footer title="Save Changes">
       <div>
         <b-form @submit.prevent="replace ? replaceCSV() : saveChanges()">
@@ -518,8 +519,5 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
-}
-a {
-  color: #42b983;
 }
 </style>
