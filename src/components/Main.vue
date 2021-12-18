@@ -66,7 +66,8 @@
 
     <!-- Save Changes button -->
     <div>
-      <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="saveChanges()">Save Changes</b-button> 
+      <!-- <b-button variant="info" style="margin-bottom:40px; margin-top:40px" @click="saveChanges()">Save Changes</b-button>  -->
+      <b-button variant="info" style="margin-bottom:40px; margin-top:40px" v-b-modal.auth-modal @click="replace=false">Save Changes</b-button> 
     </div>
 
     <!-- User form input field -->
@@ -80,8 +81,25 @@
       @change="loadCSV"
     ></b-form-file>
     <div>
-      <b-button class="button" style="margin-bottom:40px" @click="replaceCSV">Submit</b-button> 
+      <b-button class="button" style="margin-bottom:40px" v-b-modal.auth-modal @click="replace=true">Submit</b-button> 
     </div>
+    
+    <b-modal id="auth-modal" hide-footer title="Save Changes">
+      <div>
+        <b-form @submit.prevent="replace ? replaceCSV() : saveChanges()">
+          <b-form-group label="Username:">
+            <b-form-input type="text" v-model="user_in" required placeholder="Enter username"></b-form-input>
+          </b-form-group>
+          <b-form-group label="Password:">
+            <b-form-input type="password" v-model="pass_in" required placeholder="Enter password"></b-form-input>
+          </b-form-group>
+          <b-button type="submit" variant="info">Submit</b-button>
+          <br/>
+          <br/>
+          <b-alert show>Be sure you want to save these changes! They will overwrite the current flashcard file!</b-alert>
+        </b-form>
+      </div>
+    </b-modal>
     
   </div>
 </template>
@@ -107,7 +125,11 @@ export default {
       numCards: [14, 35, 70, 140, 280, 469],            // Card amount selection options
       selected_diff: ["New", "Easy", "Medium", "Hard"], // Initial difficulties selected
       selected_cards: [35], // Initial card selection
-      difficultyMode: false // Initial difficulty mode toggle 
+      difficultyMode: false, // Initial difficulty mode toggle 
+      replace: false, 
+      user_in: "",
+      pass_in: "",
+      userAuth: false,
     }
   },
   methods: {
@@ -126,7 +148,7 @@ export default {
           console.log('Vocab data:', this.vocab_file);
         })
         .catch(() => {
-          alert("API connection failed; please input your own CSV");
+          alert("API connection failed; please input your own CSV.");
         })
     },
 
@@ -168,30 +190,38 @@ export default {
       Generates a new set of cards from the new file. 
     */
     async replaceCSV() {
-      console.log("FILE", this.file_input)
-      if (this.file_input != []) {
-        let formData = new FormData();
-        formData.append('file', this.file_input);
-        // let path = 'http://localHost:5000/replace' // local route
-        let path = 'https://lunala-api.herokuapp.com/replace'
-        await axios.post(path, formData, { 
-          headers: {
-            'Content-Type': 'multipart/form-data' 
-          }
-        }).then(() => {
-          console.log('File successfully sent');
-        }).catch((error) => {
-          alert('File failed to send');
-          console.log("File send error:", error)
-        });
+      this.userAuth = false;
+      this.authenticate().then(async() => {
+        if (this.userAuth) {
+          console.log("FILE", this.file_input)
+          if (this.file_input != []) {
+            let formData = new FormData();
+            formData.append('file', this.file_input);
+            // let path = 'http://localHost:5000/replace' // local route
+            let path = 'https://lunala-api.herokuapp.com/replace'
+            await axios.post(path, formData, { 
+              headers: {
+                'Content-Type': 'multipart/form-data' 
+              }
+            }).then(() => {
+              alert('New CSV successfully sent.');
+            }).catch((error) => {
+              alert('Authenticated, but file failed to send.');
+              console.log("File send error:", error)
+            });
 
-        // Make new card deck 
-        await this.getVocab();
-        this.selected_diff = ["New", "Easy", "Medium", "Hard"];
-        this.selected_cards = [36];
-        this.shuffleCards();
-        this.generateCards(0);
-      }
+            // Make new card deck 
+            await this.getVocab();
+            this.selected_diff = ["New", "Easy", "Medium", "Hard"];
+            this.selected_cards = [36];
+            this.shuffleCards();
+            this.generateCards(0);
+          }
+          else {
+            alert("Authentication failed. Please try again!");
+          }
+        }
+      })
     },
 
     /*
@@ -257,7 +287,7 @@ export default {
               this.cardStates[this.numSet[CARDS_PER_ROW*i+j+this.offset].toString()] = 0;
             }
             catch (error) {
-              console.log("Not enough cards in the deck");
+              console.log("Not enough cards in the deck.");
               breakEarly = true;
               currRow.pop(); // Remove the "undefined" element that was added 
               break;
@@ -373,20 +403,60 @@ export default {
     },
 
     /*
+      authenticate method: 
+      Ensures that the user entered the correct credentials. 
+      Store the credentials.txt file in a folder called credentials under the lunala directory 
+    */
+    async authenticate() {
+      // let path = 'http://localHost:5000/getAuth' // local route
+      let credentials = {}
+      let path = 'https://lunala-api.herokuapp.com/getAuth'
+      await axios.get(path)
+        .then((res) => {
+          credentials = res.data;
+          console.log('Credentials retrieved.');
+        })
+        .catch(() => {
+          alert("API connection failed; please try again.");
+        })
+      Object.keys(credentials).forEach(user => {
+        console.log(user, credentials[user])
+        if (this.user_in === user) {
+          if (this.pass_in === credentials[this.user_in]) {
+            console.log("PASS")
+            this.userAuth = true;
+            return true;
+          }
+          return false;
+        }
+      })
+      return false;
+    },
+
+    /*
       saveChanges method: 
-      Sends the updated cards to the flask API app. Overwrites the original vocabulary file 
+      Sends the updated cards to the flask API app. Overwrites the original vocabulary file
+      if authentication passed. 
     */
     async saveChanges() {
-      // let path = 'http://localHost:5000/saveCSV'// local path
-      let path = 'https://lunala-api.herokuapp.com/saveCSV'
-      axios.post(path, this.vocab_file)
-        .then(() => {
-          console.log("File successfully sent");
-        })
-        .catch((error) => {
-          alert("File failed to send");
-          console.log("File send error:", error);
-        })
+      this.userAuth = false;
+      this.authenticate().then(() => {
+        if (this.userAuth) {
+          // let path = 'http://localHost:5000/saveCSV'// local path
+          let path = 'https://lunala-api.herokuapp.com/saveCSV'
+          axios.post(path, this.vocab_file)
+            .then(() => {
+              alert("Changes successfully saved.");
+            })
+            .catch((error) => {
+              alert("Authenticated, but file failed to send");
+              console.log("File send error:", error);
+            })
+        }
+        else {
+          alert("Authentication failed! Changes unsaved.")
+        }
+      })
     }
   }, 
 
