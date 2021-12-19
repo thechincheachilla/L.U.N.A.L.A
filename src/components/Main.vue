@@ -122,11 +122,11 @@ export default {
   name: 'Main',
   data() {
     return {
-      screenWidth: 0,
-      CARDS_PER_ROW: 7,
+      CARDS_PER_ROW: 7,   // Number of cards per row 
       vocab_file: [],     // Not actually a file; JSON object of the cards to display
       file_input: [],     // The actual input file
       offset: 0,          // The paging offset 
+      disclude: [],       // List of duplicate terms to disclude
       numSet: [],         // List of the order in which cards are displayed
       cardGrid: [],       // The cardgrid to display (2D array)
       cardStates: {},     // The text state of the cards
@@ -134,12 +134,12 @@ export default {
       difficulties: ["New", "Easy", "Medium", "Hard"],  // Difficulty selection options
       numCards: [14, 35, 70, 140, 280, 469],            // Card amount selection options
       selected_diff: ["New", "Easy", "Medium", "Hard"], // Initial difficulties selected
-      selected_cards: [35], // Initial card selection
+      selected_cards: [35],  // Initial card selection
       difficultyMode: false, // Initial difficulty mode toggle 
-      replace: false, 
-      user_in: "",
-      pass_in: "",
-      userAuth: false,
+      replace: false,        // Whether to replace the CSV or save changes to it
+      user_in: "",      // User username
+      pass_in: "",      // User password
+      userAuth: false,  // Whether or not user is authorized
     }
   },
   methods: {
@@ -160,6 +160,23 @@ export default {
         .catch(() => {
           alert("API connection failed; please input your own CSV.");
         })
+    },
+
+    /*
+      findDuplicates method:
+      Finds duplicate terms and discludes them from the deck 
+    */
+    findDuplicates() {
+      let terms = []
+      Object.keys(this.vocab_file['Kanji']).forEach(index => {
+        if (terms.includes(this.vocab_file['Kanji'][index])) {
+          this.disclude.push(index);
+        }
+        else {
+          terms.push(this.vocab_file['Kanji'][index]);
+        }
+      });
+      // console.log("Disclude", this.disclude);
     },
 
     /*
@@ -222,14 +239,15 @@ export default {
 
             // Make new card deck 
             await this.getVocab();
+            this.findDuplicates();
             this.selected_diff = ["New", "Easy", "Medium", "Hard"];
             this.selected_cards = [36];
             this.shuffleCards();
             this.generateCards(0);
           }
-          else {
-            alert("Authentication failed. Please try again!");
-          }
+        }
+        else {
+          alert("Authentication failed. Please try again!");
         }
       })
     },
@@ -251,13 +269,15 @@ export default {
         }
         return arr;
       }
-      let numCards = Object.keys(this.vocab_file['Kanji']).length; // Numver of cards in the deck 
+      let numCards = Object.keys(this.vocab_file['Kanji']).length; // Number of cards in the deck 
       this.numSet = [];
       for (let i = 0; i < numCards; i++) {
 
-        // Only include cards that are of the user selected difficulty 
-        if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
-          this.numSet.push(i);
+        // Only include non-duplicate cards that are of the user selected difficulty 
+        if (!this.disclude.includes(i.toString())) {
+          if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
+            this.numSet.push(i);
+          }
         }
       }
       this.numSet = shuffle(this.numSet);
@@ -498,6 +518,7 @@ export default {
     this.setCardsPerRow();
     console.log(this.screenWidth);
     await this.getVocab();
+    this.findDuplicates();
     this.shuffleCards();
     this.generateCards(0);
     this.dataLoaded = true; 
