@@ -116,12 +116,14 @@
 import axios from 'axios'
 
 const NUM_HEADERS = 5;    // Number of headers the file validator checks for in user input files
-const CARDS_PER_ROW = 7;  // Number of cards to display per row 
+// const CARDS_PER_ROW = 7;  // Number of cards to display per row 
 
 export default {
   name: 'Main',
   data() {
     return {
+      screenWidth: 0,
+      CARDS_PER_ROW: 7,
       vocab_file: [],     // Not actually a file; JSON object of the cards to display
       file_input: [],     // The actual input file
       offset: 0,          // The paging offset 
@@ -281,18 +283,18 @@ export default {
         window.scrollTo(0, 400); // Scroll to top of page every time next batch retrieved
         let breakEarly = false;  // Boolean: if cards to display run out 
         this.cardGrid = [];     
-        let numRows = this.selected_cards[0]/CARDS_PER_ROW;
+        let numRows = this.selected_cards[0]/this.CARDS_PER_ROW;
         for (let i = 0; i < numRows; i++) {
           if (breakEarly) {
             break;
           }
           let currRow = [];
-          for (let j = 0; j < CARDS_PER_ROW; j++) {
+          for (let j = 0; j < this.CARDS_PER_ROW; j++) {
 
             // If possible, add the next card from the shuffled array to the grid and init to the logographic text 
             try {
-              currRow.push(this.numSet[CARDS_PER_ROW*i+j+this.offset]);
-              this.cardStates[this.numSet[CARDS_PER_ROW*i+j+this.offset].toString()] = 0;
+              currRow.push(this.numSet[this.CARDS_PER_ROW*i+j+this.offset]);
+              this.cardStates[this.numSet[this.CARDS_PER_ROW*i+j+this.offset].toString()] = 0;
             }
             catch (error) {
               console.log("Not enough cards in the deck.");
@@ -462,6 +464,25 @@ export default {
           alert("Authentication failed! Changes unsaved.")
         }
       })
+    },
+
+    setCardsPerRow() {
+      this.screenWidth = Math.max(
+        document.documentElement.clientWidth,
+        window.innerWidth || 0
+      );
+      if (this.screenWidth >= 1400) {
+        this.CARDS_PER_ROW = 7;
+      } 
+      else if (this.screenWidth < 200) {
+        this.CARDS_PER_ROW = 1;
+      }
+      else if (this.screenWidth < 400) {
+        this.CARDS_PER_ROW = 2;
+      } 
+      else {
+        this.CARDS_PER_ROW = 6;
+      }
     }
   }, 
 
@@ -471,6 +492,8 @@ export default {
     before executing anything else. 
   */
   async beforeMount() {
+    this.setCardsPerRow();
+    console.log(this.screenWidth);
     await this.getVocab();
     this.shuffleCards();
     this.generateCards(0);
