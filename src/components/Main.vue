@@ -44,6 +44,13 @@
       v-b-tooltip.hover.right title="Toggle on/off whether clicking a card changes the language or the difficulty."
       data-toggle="tooltip"
       >Update Difficulties</b-button>
+    
+    <div v-if="!dataLoaded">
+      <div class="spinner-border text-info" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <p>Loading Cards...</p>
+    </div>
 
     <!-- Card Deck: only display after data collected from flask app -->
     <div v-if="dataLoaded" class="card_div">
