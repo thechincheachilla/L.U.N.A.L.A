@@ -467,21 +467,24 @@ export default {
     },
 
     setCardsPerRow() {
-      this.screenWidth = Math.max(
+      let screenWidth = Math.max(
         document.documentElement.clientWidth,
         window.innerWidth || 0
       );
-      if (this.screenWidth >= 1400) {
-        this.CARDS_PER_ROW = 7;
-      } 
-      else if (this.screenWidth < 200) {
+      if (screenWidth <= 576) {
         this.CARDS_PER_ROW = 1;
-      }
-      else if (this.screenWidth < 400) {
-        this.CARDS_PER_ROW = 2;
       } 
-      else {
+      else if (screenWidth <= 768) {
+        this.CARDS_PER_ROW = 3;
+      }
+      else if (screenWidth <= 1200) {
+        this.CARDS_PER_ROW = 4;
+      } 
+      else if (screenWidth <= 1600) {
         this.CARDS_PER_ROW = 6;
+      }
+      else {
+        this.CARDS_PER_ROW = 7;
       }
     }
   }, 
@@ -530,7 +533,7 @@ export default {
   background-color:rgb(46, 24, 145);
 }
 .card_text {
-  font-size: 27px;
+  font-size: 23px;
   color:rgb(255, 255, 255);
 }
 h1 {
