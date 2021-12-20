@@ -68,7 +68,7 @@
             @click="cycleCard(item)"></button>
         </b-card>
       </b-card-group>
-      <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="getCards()">Next Cards</b-button>
+      <b-button class="button" style="margin-bottom:40px; background-color:rgb(211, 209, 1); color:rgb(46, 24, 145);" @click="getCards(true)">Next Cards</b-button>
     </div>
 
     <!-- Save Changes button -->
@@ -238,12 +238,14 @@ export default {
             });
 
             // Make new card deck 
+            this.dataLoaded = false;
             await this.getVocab();
             this.findDuplicates();
             this.selected_diff = ["New", "Easy", "Medium", "Hard"];
             this.selected_cards = [36];
             this.shuffleCards();
             this.generateCards(0);
+            this.dataLoaded = true;
           }
         }
         else {
@@ -291,14 +293,14 @@ export default {
     generateCards() {
       this.offset = 0;
       this.shuffleCards();
-      this.getCards(this.offset);
+      this.getCards(true);
     },
 
     /*
       getCards method:
       Retrieves the next batch of cards to display to the user through the use of paging.
     */
-    getCards() {
+    getCards(nextPage) {
       if (this.offset <= Object.keys(this.vocab_file['Kanji']).length) {
         window.scrollTo(0, 400); // Scroll to top of page every time next batch retrieved
         let breakEarly = false;  // Boolean: if cards to display run out 
@@ -326,7 +328,10 @@ export default {
           this.cardGrid.push(currRow); // Add the completed row to the 2D card grid 
           // console.log(this.cardGrid)
         }
-        this.offset += this.selected_cards[0]; // Increment the paging offset for the next batch 
+        // Do not page on window resize handler
+        if (nextPage) {
+          this.offset += this.selected_cards[0]; // Increment the paging offset for the next batch 
+        }
         // console.log(this.cardGrid);
         // console.log(this.cardStates);
       }
@@ -491,6 +496,7 @@ export default {
         document.documentElement.clientWidth,
         window.innerWidth || 0
       );
+      console.log("Width", screenWidth);
       if (screenWidth <= 576) {
         this.CARDS_PER_ROW = 1;
       } 
@@ -506,6 +512,10 @@ export default {
       else {
         this.CARDS_PER_ROW = 7;
       }
+      this.$forceUpdate();
+      if (this.dataLoaded) {
+        this.getCards(false);
+      }
     }
   }, 
 
@@ -516,13 +526,23 @@ export default {
   */
   async beforeMount() {
     this.setCardsPerRow();
-    console.log(this.screenWidth);
     await this.getVocab();
     this.findDuplicates();
     this.shuffleCards();
     this.generateCards(0);
     this.dataLoaded = true; 
-  }
+  },
+
+  /*
+    Checks for window resizes and updates the cards accordings
+  */
+  created() {
+    window.addEventListener("resize", this.setCardsPerRow);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.setCardsPerRow);
+  },
+
 }
 </script>
 
