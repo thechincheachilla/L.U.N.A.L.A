@@ -7,6 +7,26 @@
       The Logographic Uncluttered Natural Aquisition Language Achiever
     </p>
 
+    <b-dropdown text="Origin Selection" 
+      ref="dropdown" 
+      class="m-2"
+      variant="info"
+      >
+      <div class="dd_div">
+        <b-dropdown-form>
+          <b-form-group v-slot="{ ariaDescribedby }">
+            <b-form-checkbox-group
+              v-model="selected_origin"
+              :options="origins"
+              :aria-describedby="ariaDescribedby"
+              name="flavour-1a"
+              @change="updateChecklist()"
+            ></b-form-checkbox-group>
+          </b-form-group>
+        </b-dropdown-form>
+      </div>
+    </b-dropdown>
+
     <!-- Difficulty selection field -->
     <b-form-group v-slot="{ ariaDescribedby }">
       <b-form-checkbox-group
@@ -126,13 +146,15 @@ export default {
       vocab_file: [],     // Not actually a file; JSON object of the cards to display
       file_input: [],     // The actual input file
       offset: 0,          // The paging offset 
+      origins: [],        // The set of possible origins for each term
       disclude: [],       // List of duplicate terms to disclude
       numSet: [],         // List of the order in which cards are displayed
       cardGrid: [],       // The cardgrid to display (2D array)
       cardStates: {},     // The text state of the cards
       dataLoaded: false,  // Boolean: determine if init data retrieved
       difficulties: ["New", "Easy", "Medium", "Hard"],  // Difficulty selection options
-      numCards: [14, 35, 70, 140, 280, 469],            // Card amount selection options
+      numCards: [14, 35, 70, 280, 469],            // Card amount selection options
+      selected_origin: [],
       selected_diff: ["New", "Easy", "Medium", "Hard"], // Initial difficulties selected
       selected_cards: [35],  // Initial card selection
       difficultyMode: false, // Initial difficulty mode toggle 
@@ -177,6 +199,22 @@ export default {
         }
       });
       // console.log("Disclude", this.disclude);
+    },
+
+    /*
+      updateOrigins method:
+      Determins the complete set of origins for all fetched terms
+    */
+    updateOrigins() {
+      this.origins = new Set();
+      Object.keys(this.vocab_file['Origin']).forEach(index => {
+        this.origins.add(this.vocab_file['Origin'][index]);
+      });
+      this.origins = Array.from(this.origins);
+      this.origins.forEach(origin => {
+        this.selected_origin.push(origin);
+      });
+      console.log("Origins:", this.origins);
     },
 
     /*
@@ -241,6 +279,7 @@ export default {
             this.dataLoaded = false;
             await this.getVocab();
             this.findDuplicates();
+            this.updateOrigins();
             this.selected_diff = ["New", "Easy", "Medium", "Hard"];
             this.selected_cards = [36];
             this.shuffleCards();
@@ -275,10 +314,12 @@ export default {
       this.numSet = [];
       for (let i = 0; i < numCards; i++) {
 
-        // Only include non-duplicate cards that are of the user selected difficulty 
+        // Only include non-duplicate cards that are of the user selected difficulty and origin
         if (!this.disclude.includes(i.toString())) {
           if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
-            this.numSet.push(i);
+            if (this.selected_origin.includes(this.vocab_file['Origin'][i])) {
+              this.numSet.push(i);
+            }  
           }
         }
       }
@@ -537,6 +578,7 @@ export default {
     this.setCardsPerRow();
     await this.getVocab();
     this.findDuplicates();
+    this.updateOrigins();
     this.shuffleCards();
     this.generateCards(0);
     this.dataLoaded = true; 
@@ -570,9 +612,10 @@ export default {
   text-align: left;
   margin-top: 30px;
 }
-.card_div {
-  /* overflow-y: auto; 
-  height: 1000px; */
+.dd_div {
+  overflow-y: auto; 
+  height: 200px;
+  width: 250px;
 }
 .cards {
   margin: auto;
