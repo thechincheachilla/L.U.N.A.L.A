@@ -496,7 +496,7 @@ export default {
         document.documentElement.clientWidth,
         window.innerWidth || 0
       );
-      console.log("Width", screenWidth);
+      // console.log("Width", screenWidth);
       if (screenWidth <= 576) {
         this.CARDS_PER_ROW = 1;
       } 
