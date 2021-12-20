@@ -496,21 +496,30 @@ export default {
         document.documentElement.clientWidth,
         window.innerWidth || 0
       );
-      // console.log("Width", screenWidth);
-      if (screenWidth <= 576) {
+      console.log("Width", screenWidth);
+      if (screenWidth <= 300) {
         this.CARDS_PER_ROW = 1;
       } 
+      else if (screenWidth <= 560) {
+        this.CARDS_PER_ROW = 2;
+      }
       else if (screenWidth <= 768) {
         this.CARDS_PER_ROW = 3;
       }
-      else if (screenWidth <= 1200) {
+      else if (screenWidth <= 1000) {
         this.CARDS_PER_ROW = 4;
       } 
-      else if (screenWidth <= 1600) {
+      else if (screenWidth <= 1200) {
+        this.CARDS_PER_ROW = 5;
+      } 
+      else if (screenWidth <= 1400) {
         this.CARDS_PER_ROW = 6;
       }
-      else {
+      else if (screenWidth <= 1600) {
         this.CARDS_PER_ROW = 7;
+      }
+      else {
+        this.CARDS_PER_ROW = 8;
       }
       this.$forceUpdate();
       if (this.dataLoaded) {
