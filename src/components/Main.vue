@@ -135,7 +135,7 @@
 <script>
 import axios from 'axios'
 
-const NUM_HEADERS = 5;    // Number of headers the file validator checks for in user input files
+const NUM_HEADERS = 6;    // Number of headers the file validator checks for in user input files
 // const CARDS_PER_ROW = 7;  // Number of cards to display per row 
 
 export default {
@@ -242,8 +242,8 @@ export default {
       console.log('Headers:', headers)
       if (headers.length != NUM_HEADERS) {
         alert("CSV File not correctly formatted. \n\n\
-              The CSV should contain columns in the order of: \n\
-              Kanji, Hiragana, English, Origin, and Difficulty")
+              The CSV should contain columns in any order of: \n\
+              Kanji, Hiragana, English, Origin, Difficulty, and Category")
         this.file_input = [];
       }
     },
