@@ -147,7 +147,7 @@ export default {
       file_input: [],     // The actual input file
       offset: 0,          // The paging offset 
       origins: [],        // The set of possible origins for each term
-      disclude: [],       // List of duplicate terms to disclude
+      dupMap: {},
       numSet: [],         // List of the order in which cards are displayed
       cardGrid: [],       // The cardgrid to display (2D array)
       cardStates: {},     // The text state of the cards
@@ -189,16 +189,13 @@ export default {
       Finds duplicate terms and discludes them from the deck 
     */
     findDuplicates() {
-      let terms = []
       Object.keys(this.vocab_file['Kanji']).forEach(index => {
-        if (terms.includes(this.vocab_file['Kanji'][index])) {
-          this.disclude.push(index);
+        if (!(this.vocab_file['Kanji'][index] in this.dupMap)) {
+          this.dupMap[this.vocab_file['Kanji'][index]] = [];
         }
-        else {
-          terms.push(this.vocab_file['Kanji'][index]);
-        }
+        this.dupMap[this.vocab_file['Kanji'][index]].push(index);
       });
-      // console.log("Disclude", this.disclude);
+      // console.log("Duplicate Map:", this.dupMap);
     },
 
     /*
@@ -312,19 +309,24 @@ export default {
       }
       let numCards = Object.keys(this.vocab_file['Kanji']).length; // Number of cards in the deck 
       this.numSet = [];
+      let disclude = [];
+      let collisions = [];
       for (let i = 0; i < numCards; i++) {
-
-        // Only include non-duplicate cards that are of the user selected difficulty and origin
-        if (!this.disclude.includes(i.toString())) {
-          if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
-            if (this.selected_origin.includes(this.vocab_file['Origin'][i])) {
+        if (this.selected_diff.includes(this.getDifficulty(this.vocab_file['Difficulty'][i]))) {
+          if (this.selected_origin.includes(this.vocab_file['Origin'][i])) {
+            if (!disclude.includes(this.vocab_file['Kanji'][i])) {
               this.numSet.push(i);
-            }  
-          }
+              disclude.push(this.vocab_file['Kanji'][i]);
+            }
+            else {
+              collisions.push(i + ": " + this.vocab_file['Kanji'][i])
+            }
+          }  
         }
       }
       this.numSet = shuffle(this.numSet);
       //console.log(this.numSet.length, this.numSet)
+      console.log("Collisions:", collisions);
     },
 
     /*
@@ -445,12 +447,20 @@ export default {
 
       // Cycle difficlty state
       else {
-        if (this.vocab_file["Difficulty"][item] < 3) {
-          this.vocab_file["Difficulty"][item] = this.vocab_file["Difficulty"][item] + 1;
-        }
-        else {
-          this.vocab_file["Difficulty"][item] = 0;
-        }
+        let termsToUpdate = this.dupMap[this.vocab_file["Kanji"][item]]; // Update same terms across sources
+        console.log("Updating:", termsToUpdate);
+        let consistencyTerm = termsToUpdate[0]; // Ensure all terms across sources have same difficulty
+        let newDiff = -1;
+        if (this.vocab_file["Difficulty"][consistencyTerm] < 3) {
+            newDiff = this.vocab_file["Difficulty"][consistencyTerm] + 1;
+          }
+          else {
+            newDiff = 0;
+          }
+        termsToUpdate.forEach(term => {
+          this.vocab_file["Difficulty"][term] = newDiff;
+          console.log(term, this.vocab_file["Kanji"][term], this.vocab_file["Difficulty"][term])
+        });
       }
       this.$forceUpdate();
     },
@@ -529,6 +539,7 @@ export default {
         else {
           alert("Authentication failed! Changes unsaved.")
         }
+        console.log("Sent flash cards:", this.vocab_file);
       })
     },
 
@@ -537,7 +548,7 @@ export default {
         document.documentElement.clientWidth,
         window.innerWidth || 0
       );
-      console.log("Width", screenWidth);
+      // console.log("Width", screenWidth);
       if (screenWidth <= 300) {
         this.CARDS_PER_ROW = 1;
       } 
