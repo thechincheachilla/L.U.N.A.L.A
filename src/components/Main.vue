@@ -153,7 +153,7 @@ export default {
       cardStates: {},     // The text state of the cards
       dataLoaded: false,  // Boolean: determine if init data retrieved
       difficulties: ["New", "Easy", "Medium", "Hard"],  // Difficulty selection options
-      numCards: [14, 35, 70, 280, 469],            // Card amount selection options
+      numCards: [],       // Card amount selection options
       selected_origin: [],
       selected_diff: ["New", "Easy", "Medium", "Hard"], // Initial difficulties selected
       selected_cards: [35],  // Initial card selection
@@ -573,6 +573,11 @@ export default {
       else {
         this.CARDS_PER_ROW = 8;
       }
+      this.numCards.push(this.CARDS_PER_ROW * 2); 
+      this.numCards.push(this.CARDS_PER_ROW * 5);
+      this.numCards.push(this.CARDS_PER_ROW * 10);
+      this.numCards.push(this.CARDS_PER_ROW * 40);
+      this.numCards.push(this.CARDS_PER_ROW * 67);
       this.$forceUpdate();
       if (this.dataLoaded) {
         this.getCards(false);
