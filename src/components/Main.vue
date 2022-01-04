@@ -156,7 +156,7 @@ export default {
       numCards: [],       // Card amount selection options
       selected_origin: [],
       selected_diff: ["New", "Easy", "Medium", "Hard"], // Initial difficulties selected
-      selected_cards: [35],  // Initial card selection
+      selected_cards: [],    // Initial card selection
       difficultyMode: false, // Initial difficulty mode toggle 
       replace: false,        // Whether to replace the CSV or save changes to it
       user_in: "",      // User username
@@ -587,6 +587,8 @@ export default {
       this.numCards.push(this.CARDS_PER_ROW * 10);
       this.numCards.push(this.CARDS_PER_ROW * 40);
       this.numCards.push(this.CARDS_PER_ROW * 67);
+
+      this.selected_cards = [this.CARDS_PER_ROW * 5];
 
       // Force the screen to update and get the cards
       this.$forceUpdate();
