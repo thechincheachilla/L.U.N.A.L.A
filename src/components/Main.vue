@@ -543,7 +543,14 @@ export default {
       })
     },
 
+    /*
+      setCardsPerRow method:
+      Listener method: determines number of cards to display based on the screen size
+      Dynamically updates as the screen size is updated.
+      Also updates the card count options.
+    */
     setCardsPerRow() {
+      this.numCards = [];
       let screenWidth = Math.max(
         document.documentElement.clientWidth,
         window.innerWidth || 0
@@ -573,11 +580,15 @@ export default {
       else {
         this.CARDS_PER_ROW = 8;
       }
+
+      // Determine card number options as 2, 5, 10, 40, and 67 rows
       this.numCards.push(this.CARDS_PER_ROW * 2); 
       this.numCards.push(this.CARDS_PER_ROW * 5);
       this.numCards.push(this.CARDS_PER_ROW * 10);
       this.numCards.push(this.CARDS_PER_ROW * 40);
       this.numCards.push(this.CARDS_PER_ROW * 67);
+
+      // Force the screen to update and get the cards
       this.$forceUpdate();
       if (this.dataLoaded) {
         this.getCards(false);
